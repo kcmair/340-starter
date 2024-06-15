@@ -4,3 +4,175 @@
 *:after {
   box-sizing: border-box;
 }
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: sans-serif;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-image: url("/images/site/small_check.jpg");
+  background-repeat: repeat;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.content {
+  width: 80vw;
+  height: 96vh;
+  background-color: white;
+  border: 5px solid mediumblue;
+  overflow: auto;
+  margin: 10px;
+  padding: 10px;
+}
+
+.siteName a {
+  font-size: 40px;
+  color: black;
+  text-decoration: none;
+  padding: 8px;
+}
+
+.account a {
+  font-size: 20px;
+  color: black;
+  text-decoration: none;
+  padding: 8px;
+}
+
+.menu {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  list-style-type: none;
+  padding: 20px;
+  background-color: black;
+  color: white;
+  font-family: sans-serif;
+}
+
+.copyright {
+  position: absolute;
+  bottom: 4%;
+  left: 12%;
+  margin: 8px;
+}
+
+.container {
+  position: relative;
+}
+
+.delorean {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 80%;
+}
+
+.description {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 20vw;
+  height: 24vw;
+  color: mediumblue;
+  background-color: rgba(255, 255, 255, 0.7);
+}
+.description img {
+  width: 20vw;
+}
+
+.subtext {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 20px;
+}
+
+.upgrades {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 10px;
+  height: 200px;
+  width: 200px;
+}
+
+.upgrades div {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.upgrades img {
+  height: 80px;
+  width: 160px;
+  padding: 4px 40px;
+  background-color: dodgerblue;
+  border: 1px solid black;
+}
+
+.upgrades a {
+  color: mediumblue;
+}
+
+.reviews {
+  padding: 0;
+  margin: 0;
+}
+
+.reviews li {
+  padding: 8px;
+}
+
+@media screen and (max-width: 850px) {
+  body {
+    background-image: none;
+  }
+  .content {
+    margin: 10px;
+    padding: 0;
+    border: none;
+  }
+  .siteName a {
+    font-size: calc(16px + 1vw);
+    color: black;
+    text-decoration: none;
+    padding: 8px;
+  }
+  .account a {
+    font-size: calc(8px + 1vw);
+    color: black;
+    text-decoration: none;
+    padding: 8px;
+  }
+  .subtext {
+    display: flex;
+    flex-direction: column-reverse;
+  }
+  .copyright {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    margin: 8px;
+  }
+  h1 {
+    font-size: calc(16px + 1vw);
+    margin: 3vw;
+  }
+  h2 {
+    font-size: calc(12px + 1vw);
+    margin: 2vw;
+  }
+  h3 {
+    font-size: calc(8px + 1vw);
+    margin: 1vw;
+  }
+}
