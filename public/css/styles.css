@@ -54,6 +54,10 @@ body {
   list-style-type: none;
   padding: 20px;
   background-color: black;
+}
+
+.menu a {
+  text-decoration: none;
   color: white;
   font-family: sans-serif;
 }
@@ -130,6 +134,31 @@ body {
 
 .reviews li {
   padding: 8px;
+}
+
+.grid {
+  list-style-type: none;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+}
+
+.grid * {
+  margin: 0;
+}
+
+.grid li {
+  display: flex;
+  flex-direction: column;
+  align-content: space-between;
+  margin: 8px 0;
+  border: 1px solid black;
+  width: 200px;
+  height: 240px;
+}
+
+.grid img {
+  width: 100%;
 }
 
 @media screen and (max-width: 850px) {
