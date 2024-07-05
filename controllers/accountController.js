@@ -8,7 +8,8 @@ async function buildAccountDetail(req, res, next) {
   let nav = await utilities.getNav()
   res.render("account/login", {
     title: "Login",
-    nav
+    nav,
+    errors: null,
   })
 }
 
@@ -16,7 +17,8 @@ async function buildRegistrationDetail(req, res, next) {
   let nav = await utilities.getNav()
   res.render("account/register", {
     title: "Register",
-    nav
+    nav,
+    errors: null,
   })
 }
 
