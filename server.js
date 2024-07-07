@@ -66,7 +66,7 @@ app.use("/account", accountRoute)
 // File Not Found Route - must be last route in list
 app.use(async (req, res, next) => {
   next({status: 404, message:
-      'Looks like you\'ve taken a worng turn.<br>Check your GPS and try again.'
+      'Looks like you\'ve taken a wrong turn.<br>Check your GPS and try again.'
   })
 })
 
@@ -77,7 +77,7 @@ app.use(async (req, res, next) => {
 app.use(async (err, req, res, next) => {
   let nav = await utilities.getNav()
   console.error(`Error at: "${req.originalUrl}": ${err.message}`)
-  if(err.status == 404){
+  if(err.status === 404){
     message = err.message
   } else {
     message = 'Oh no! Looks like an information highway fender bender.<br>Maybe try a different route?'}

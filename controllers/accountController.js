@@ -13,6 +13,9 @@ async function buildAccountDetail(req, res, next) {
   })
 }
 
+/* ****************************************
+*  Deliver registration view
+* *************************************** */
 async function buildRegistrationDetail(req, res, next) {
   let nav = await utilities.getNav()
   res.render("account/register", {
@@ -40,7 +43,7 @@ async function registerAccount(req, res) {
   if (regResult) {
     req.flash(
       "notice",
-      `Congratulations, you\'re registered ${account_firstname}. Please log in.`
+      `Congratulations, you\'ve registered ${account_firstname}. Please log in.`
     )
     res.status(201).render("account/login", {
       title: "Login",

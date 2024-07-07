@@ -4,7 +4,7 @@
     res.redirect('/')
 } %>
 
-<%# mesages() %>
+<%- messages() %>
 
 <% if (errors) { %>
     <ul class="notice">
@@ -14,14 +14,14 @@
     </ul>
 <% } %>
 
-<div class="login">
+<div class="forms">
     <form action="/account/register" method="post">
         <label for="first_name">First Name:</label>
-        <input type="text" id="first_name" name="account_firstname" required>
+        <input type="text" id="first_name" name="account_firstname" required value="<%= locals.account_firstname %>">
         <label for="last_name">Last Name:</label>
-        <input type="text" id="last_name" name="account_lastname" required>
+        <input type="text" id="last_name" name="account_lastname" required value="<%= locals.account_lastname %>">
         <label for="email">Email:</label>
-        <input type="email" id="email" name="account_email" required>
+        <input type="email" id="email" name="account_email" required value="<%= locals.account_email %>">
         <label for="password">Password:</label>
         <input type="password"
                id="password"

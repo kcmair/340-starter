@@ -165,7 +165,7 @@ body {
   color: red;
 }
 
-.login {
+.forms {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -180,16 +180,32 @@ body {
   margin-bottom: 5px;
 } input {
   margin-bottom: 15px;
+  padding: 4px;
 } button {
   background-color: mediumblue;
   color: white;
   border-color: white;
-  padding: 4px;
+  padding: 8px;
   cursor: pointer;
 } p {
   margin: 0;
 } ul {
   margin-top: 0;
+} select {
+  margin-bottom: 12px;
+  padding: 4px;
+}
+
+.manage {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  background-color: lightblue;
+  font-family: Arial, sans-serif;
+  padding: 12px;
+} a {
+  margin: 8px;
 }
 
 @media screen and (max-width: 850px) {
