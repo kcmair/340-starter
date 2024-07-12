@@ -48,5 +48,10 @@ router.post("/update/",
   regValidate.checkUpdateData,
   invController.updateInventory)
 
+// Route to delete inventory view
+router.get("/delete/:inventoryId", invController.deleteInventoryView)
+
+// Route to delete inventory data
+router.post("/delete/", invController.deleteInventory)
 
 module.exports = router

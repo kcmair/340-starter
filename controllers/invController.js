@@ -243,4 +243,62 @@ invCont.updateInventory = async function (req, res, next) {
   }
 }
 
+/* ***************************
+ *  Build delete confirmation view
+ * ************************** */
+invCont.deleteInventoryView = async function (req, res, next) {
+  const inv_id = parseInt(req.params.inventoryId)
+  let nav = await utilities.getNav()
+  const itemData = await invModel.getInventoryByInventoryId(inv_id)
+  res.render("inventory/delete-confirm", {
+    title: "Delete Confirmation",
+    nav,
+    errors: null,
+    inv_id: itemData.inv_id,
+    inv_make: itemData.inv_make,
+    inv_model: itemData.inv_model,
+    inv_year: itemData.inv_year,
+    inv_price: itemData.inv_price,
+  })
+}
+
+invCont.deleteInventory = async function (req, res, next) {
+  let nav = await utilities.getNav()
+  const  {
+    inv_id,
+    inv_make,
+    inv_model,
+    inv_year,
+    inv_price,
+    classification_id
+  } = req.body
+  const classificationList = await utilities.buildClassificationList(classification_id)
+
+  const regResult = await invModel.deleteInventory(inv_id)
+
+  if (regResult) {
+    req.flash (
+      "notice",
+      `The ${inv_year} ${inv_make} ${inv_model} was successfully removed.`
+    )
+    res.status(201).render("inventory/management", {
+      title: "Inventory Management",
+      nav,
+      classificationList
+    })
+  } else {
+    req.flash ("notice", "Something went wrong. Please try again")
+    res.status(501).render("inventory/delete-confirm", {
+      title: "Delete Confirmation",
+      nav,
+      errors: null,
+      inv_id,
+      inv_make,
+      inv_model,
+      inv_year,
+      inv_price,
+    })
+  }
+}
+
 module.exports = invCont
