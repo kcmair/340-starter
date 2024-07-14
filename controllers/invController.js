@@ -95,9 +95,11 @@ invCont.addClassification = async function (req, res) {
       "notice",
       `Congratulations, you've added ${classification_name} to the list of classifications.`
     )
+    const classificationList = await utilities.buildClassificationList()
     res.status(201).render("inventory/management", {
-      title: "Login",
+      title: "Manage Inventory",
       nav,
+      classificationList
     })
   } else {
     req.flash("notice", "Something went wrong. Please try again.")
@@ -159,15 +161,26 @@ invCont.addInventory = async function (req, res) {
       "notice",
       `A ${inv_color} ${inv_year} ${inv_make} ${inv_model} has been added to the inventory.`
     )
+    const classificationList = await utilities.buildClassificationList()
     res.status(201).render("inventory/management", {
       title: "Inventory Management",
-      nav
+      nav,
+      classificationList
     })
   } else {
     req.flash ("notice", "Something went wrong. Please try again")
+    const classificationList = await utilities.buildClassificationList(classification_id)
     res.status(501).render("inventory/add-inventory", {
       title: "Add Inventory",
       nav,
+      inv_make,
+      inv_model,
+      inv_year,
+      inv_description,
+      inv_price,
+      inv_miles,
+      inv_color,
+      classificationList
     })
   }
 }
@@ -306,7 +319,7 @@ invCont.deleteInventory = async function (req, res) {
     inv_price,
     classification_id
   } = req.body
-  const classificationList = await utilities.buildClassificationList(classification_id)
+  const classificationList = await utilities.buildClassificationList()
 
   const regResult = await invModel.deleteInventory(inv_id)
 

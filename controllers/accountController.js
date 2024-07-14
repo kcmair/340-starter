@@ -150,13 +150,14 @@ async function updateAccountView(req, res) {
 * *************************************** */
 async function updateAccount(req, res) {
   let nav = await utilities.getNav()
-  const { account_firstname, account_lastname, account_email, account_id } = req.body
+  const { account_firstname, account_lastname, account_email, account_type, account_id } = req.body
   const manageAccount = await utilities.buildAccountManagementView(res.locals.accountData)
 
   const regResult = await accountModel.updateAccount(
     account_firstname,
     account_lastname,
     account_email,
+    account_type,
     account_id
   )
 
@@ -178,6 +179,7 @@ async function updateAccount(req, res) {
       account_firstname,
       account_lastname,
       account_email,
+      account_type,
       account_id
     })
   }
@@ -224,23 +226,20 @@ async function updatePassword(req, res) {
   }
 }
 
-async function logoutUser() {
+async function logoutUser(req, res) {
   if (process.env.NODE_ENV === 'development') {
-    res.clearCookie("jwt", { httpOnly: true })
+    res.clearCookie("jwt", { httpOnly: true, signed: true})
   } else {
-    res.clearCookie("jwt", { httpOnly: true, secure: true })
+    res.clearCookie("jwt", { httpOnly: true, signed:true, secure: true })
   }
+  res.locals.accountData = null
+  req.flash("notice", "Logout Successful")
   req.session.destroy((err) => {
     if(err) {
       console.error(err)
     }
   })
-  res.locals.accountData = null
-  let nav = await utilities.getNav()
-  res.flash("notice", "Successfully logged out.")
-  res.render("index", {
-    nav
-  })
+  res.redirect("/")
 }
 
 module.exports = {

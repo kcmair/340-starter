@@ -22,15 +22,14 @@ router.post(
   "/add-classification",
   regValidate.classificationRules(),
   regValidate.checkClassData,
-  utilities.handleErrors(invController.addClassView)
+  utilities.handleErrors(invController.addClassification)
 )
 
 // Route to add inventory view
 router.get("/add-inventory", utilities.handleErrors(invController.addInventoryView))
 
 // Route to add new inventory
-router.post(
-  "/add-inventory",
+router.post( "/add-inventory",
   regValidate.inventoryRules(),
   regValidate.checkInventoryData,
   utilities.handleErrors(invController.addInventory)

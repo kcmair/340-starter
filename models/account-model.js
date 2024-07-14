@@ -51,10 +51,10 @@ async function getAccountByEmail (account_email) {
   }
 }
 
-async function updateAccount (account_firstname, account_lastname, account_email, account_id) {
+async function updateAccount (account_firstname, account_lastname, account_email, account_type, account_id) {
   try{
-    const sql = "UPDATE account SET account_firstname = $1, account_lastname = $2, account_email= $3 WHERE account_id = $4 RETURNING *"
-    return await pool.query(sql, [account_firstname, account_lastname, account_email, account_id])
+    const sql = "UPDATE account SET account_firstname = $1, account_lastname = $2, account_email = $3 account_type = $4 WHERE account_id = $5 RETURNING *"
+    return await pool.query(sql, [account_firstname, account_lastname, account_email, account_type, account_id])
   } catch (error) {
     return error.message
   }

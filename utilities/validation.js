@@ -55,8 +55,8 @@ validate.registrationRules = () => {
 /*  **********************************
   *  Update Account Data Validation Rules
   * ********************************* */
-validate.updateAccountRules = () => {
-  // const accountId = req.body.account_id
+validate.updateAccountRules = (req) => {
+  const accountId = req.body.account_id
   return [
     // firstname is required and must be string
     body("account_firstname")
@@ -82,8 +82,8 @@ validate.updateAccountRules = () => {
       .withMessage("A valid email is required.")
       .custom(async (account_email) => {
         const emailExists = await accountModel.checkExistingEmail(account_email)
-        // const emailChanged = await accountModel.checkEmailChanged(account_email, accountId)
-        if (emailExists) {
+        const emailChanged = await accountModel.checkEmailChanged(account_email, accountId)
+        if (emailChanged && emailExists) {
           throw new Error("Email exists. Please log in or use different email")
         }
       }),
@@ -247,7 +247,7 @@ validate.checkInventoryData = async (req, res, next) => {
   let errors = validationResult(req)
   if (!errors.isEmpty()) {
     let nav = await utilities.getNav()
-    const classificationList = await utilities.buildClassificationList()
+    const classificationList = await utilities.buildClassificationList(classification_id)
     res.render("inventory/add-inventory", {
       errors,
       title: "Add Inventory",

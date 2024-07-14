@@ -9,10 +9,7 @@ const regValidate = require('../utilities/validation')
 router.get("/login", utilities.handleErrors(accountController.buildLogin))
 
 // Process the login request
-router.post("/login",
-  // regValidate.loginRules(),
-  // regValidate.checkLoginData,
-  utilities.handleErrors(accountController.accountLogin)
+router.post("/login", utilities.handleErrors(accountController.accountLogin)
 )
 
 // Route to build registration view
@@ -21,8 +18,8 @@ router.get("/register", utilities.handleErrors(accountController.buildRegistrati
 // Route to process the registration data
 router.post(
   "/register",
-  // regValidate.registrationRules,
-  // regValidate.checkRegData,
+  regValidate.registrationRules,
+  regValidate.checkRegData,
   utilities.handleErrors(accountController.registerAccount)
 )
 
@@ -34,15 +31,15 @@ router.get("/update-user", utilities.handleErrors(accountController.updateAccoun
 
 // Route to update the user info
 router.post("/update-user",
-  // regValidate.updateAccountRules,
-  // regValidate.checkAccountUpdateData,
+  regValidate.updateAccountRules,
+  regValidate.checkAccountUpdateData,
   utilities.handleErrors(accountController.updateAccount)
 )
 
 // Route to update the password
 router.post("/update-password",
-  // regValidate.updatePasswordRules,
-  // regValidate.checkAccountUpdateData,
+  regValidate.updatePasswordRules,
+  regValidate.checkAccountUpdateData,
   utilities.handleErrors(accountController.updatePassword))
 
 // Route to log out
