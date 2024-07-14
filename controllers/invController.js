@@ -1,25 +1,24 @@
 const invModel = require("../models/inventory-model")
 const utilities = require("../utilities/")
-
 const invCont = {}
 
 /* ***************************
  *  Build inventory by classification view
  * ************************** */
-invCont.buildByClassificationId = async function (req, res, next) {
+invCont.buildByClassificationId = async function (req, res) {
   const classification_id = req.params.classificationId
   const data = await invModel.getInventoryByClassificationId(classification_id)
   const grid = await utilities.buildClassificationGrid(data)
   let nav = await utilities.getNav()
   if (data.length) {
     const className = data[0].classification_name
-    res.render("./inventory/classification", {
+    res.render("inventory/classification", {
       title: className + " vehicles",
       nav,
       grid,
     })
   } else {
-    res.render("./inventory/classification", {
+    res.render("inventory/classification", {
       title: "No vehicles",
       nav,
       grid
@@ -27,41 +26,64 @@ invCont.buildByClassificationId = async function (req, res, next) {
   }
 }
 
-invCont.buildByInventoryId = async function (req, res, next) {
+invCont.buildByInventoryId = async function (req, res) {
   const inventory_id = req.params.inventoryId
   const data = await invModel.getInventoryByInventoryId(inventory_id)
   const display = await utilities.displayInventory(data)
   let nav = await utilities.getNav()
   const inventoryName = data.inv_make + ' ' + data.inv_model
-  res.render("./inventory/vehicle", {
+  res.render("inventory/vehicle", {
     title: inventoryName,
     nav,
     display,
   })
 }
 
-invCont.buildManagementView = async function (req, res, next) {
+invCont.buildManagementView = async function (req, res) {
   let nav = await utilities.getNav()
-  const classificationList = await utilities.buildClassificationList()
-  res.render("./inventory/management", {
-    title: 'Inventory Management',
-    nav,
-    classificationList
-  })
+  const accountType = res.locals.accountData.account_type
+  if ((accountType === "Employee") || (accountType === "Admin")) {
+    const classificationList = await utilities.buildClassificationList()
+    res.render("inventory/management", {
+      title: 'Inventory Management',
+      nav,
+      classificationList,
+      errors: null
+    })
+  } else {
+    req.flash("notice", "Please log in with an employee or admin account to access that page.")
+    res.render("account/login", {
+      title: 'Login',
+      nav,
+      errors: null
+    })
+  }
 }
 
-invCont.addClassView = async function (req, res, next) {
+invCont.addClassView = async function (req, res) {
   let nav = await utilities.getNav()
-  res.render("./inventory/add-classification", {
-    title: 'Add Classification',
-    nav,
-  })
+  const accountType = res.locals.accountData.account_type
+  if ((accountType === "Employee") || (accountType === "Admin")) {
+    res.render("inventory/add-classification", {
+      title: 'Add Classification',
+      nav,
+      errors: null,
+    })
+  } else {
+    const message = "Please log in with an employee or admin account to access that page."
+    res.render("account/login", {
+      title: 'Login',
+      nav,
+      message,
+      errors: null
+    })
+  }
 }
 
 /* ****************************************
 *  Add New Classification
 * *************************************** */
-invCont.addClassification = async function (req, res, next) {
+invCont.addClassification = async function (req, res) {
   let nav = await utilities.getNav()
   const { classification_name } = req.body
   const regResult = await invModel.addClassification(
@@ -86,17 +108,29 @@ invCont.addClassification = async function (req, res, next) {
   }
 }
 
-invCont.addInventoryView = async function (req, res, next) {
+invCont.addInventoryView = async function (req, res) {
   let nav = await utilities.getNav()
-  const classificationList = await utilities.buildClassificationList()
-  res.render("inventory/add-inventory", {
-    title: "Add Inventory",
-    nav,
-    classificationList,
-  })
+  const accountType = res.locals.accountData.account_type
+  if ((accountType === "Employee") || (accountType === "Admin")) {
+    const classificationList = await utilities.buildClassificationList()
+    res.render("inventory/add-inventory", {
+      title: "Add Inventory",
+      nav,
+      classificationList,
+      errors: null,
+    })
+  } else {
+    const message = "Please log in with an employee or admin account to access that page."
+    res.render("account/login", {
+      title: 'Login',
+      nav,
+      message,
+      errors: null
+    })
+  }
 }
 
-invCont.addInventory = async function (req, res, next) {
+invCont.addInventory = async function (req, res) {
   let nav = await utilities.getNav()
   const {
     inv_make,
@@ -154,7 +188,7 @@ invCont.getInventoryJSON = async (req, res, next) => {
 /* ***************************
  *  Build edit inventory view
  * ************************** */
-invCont.editInventoryView = async function (req, res, next) {
+invCont.editInventoryView = async function (req, res) {
   const inv_id = parseInt(req.params.inventoryId)
   let nav = await utilities.getNav()
   const itemData = await invModel.getInventoryByInventoryId(inv_id)
@@ -179,7 +213,7 @@ invCont.editInventoryView = async function (req, res, next) {
   })
 }
 
-invCont.updateInventory = async function (req, res, next) {
+invCont.updateInventory = async function (req, res) {
   let nav = await utilities.getNav()
   const {
     inv_id,
@@ -246,7 +280,7 @@ invCont.updateInventory = async function (req, res, next) {
 /* ***************************
  *  Build delete confirmation view
  * ************************** */
-invCont.deleteInventoryView = async function (req, res, next) {
+invCont.deleteInventoryView = async function (req, res) {
   const inv_id = parseInt(req.params.inventoryId)
   let nav = await utilities.getNav()
   const itemData = await invModel.getInventoryByInventoryId(inv_id)
@@ -262,7 +296,7 @@ invCont.deleteInventoryView = async function (req, res, next) {
   })
 }
 
-invCont.deleteInventory = async function (req, res, next) {
+invCont.deleteInventory = async function (req, res) {
   let nav = await utilities.getNav()
   const  {
     inv_id,

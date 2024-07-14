@@ -1,4 +1,4 @@
-const pool = require("../database/")
+const pool = require("../database");
 
 /* *****************************
 *   Register new account
@@ -21,6 +21,18 @@ async function checkExistingEmail(account_email){
     const email = await pool.query(sql, [account_email])
     return email.rowCount
   } catch (error) {
+    console.error(error.message)
+    return error.message
+  }
+}
+
+async function checkEmailChanged(account_email, account_id) {
+  try {
+    const sql = "SELECT account_email FROM account WHERE account_id = $1"
+    const result = await pool.query(sql, [account_id])
+    return result.rows[0].account_email === account_email
+  } catch (error) {
+    console.error(error.message)
     return error.message
   }
 }
@@ -39,8 +51,29 @@ async function getAccountByEmail (account_email) {
   }
 }
 
+async function updateAccount (account_firstname, account_lastname, account_email, account_id) {
+  try{
+    const sql = "UPDATE account SET account_firstname = $1, account_lastname = $2, account_email= $3 WHERE account_id = $4 RETURNING *"
+    return await pool.query(sql, [account_firstname, account_lastname, account_email, account_id])
+  } catch (error) {
+    return error.message
+  }
+}
+
+async function updatePassword (hashedPassword, account_id) {
+  try{
+    const sql = "UPDATE account SET account_password = $1 WHERE accout_id = $2 RETURNING *"
+    return await pool.query(sql, [hashedPassword, account_id])
+  } catch (error) {
+    return error.message
+  }
+}
+
 module.exports = {
   registerAccount,
   checkExistingEmail,
-  getAccountByEmail
+  getAccountByEmail,
+  checkEmailChanged,
+  updateAccount,
+  updatePassword
 }

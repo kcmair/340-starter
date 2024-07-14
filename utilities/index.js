@@ -6,7 +6,7 @@ require("dotenv").config()
 /* ************************
  * Constructs the nav HTML unordered list
  ************************** */
-Util.getNav = async function (req, res, next) {
+Util.getNav = async function () {
   let data = await invModel.getClassifications()
   let list = "<ul class='menu'>"
   list += '<li><a href="/" title="Home page">Home</a></li>'
@@ -66,7 +66,7 @@ Util.buildClassificationGrid = async function(data){
 Util.displayInventory = async function(data){
   let display
   if(data){
-    display = '<ul id="vehicle" class="vehicle>"'
+    display = '<ul id="vehicle" class="vehicle">'
     display += '<li>'
     display += '<img src="' + data.inv_image
       +'" alt="Image of'+ data.inv_make + ' ' + data.inv_model
@@ -148,9 +148,41 @@ Util.checkLogin = (req, res, next) => {
   if (res.locals.loggedin) {
     next()
   } else {
-    req.flash("notice", "Please log in.")
+    req.flash("notice", "Please login.")
     return res.redirect("/account/login")
   }
+}
+
+Util.buildHeader = (req, res) => {
+  let accountHeader
+  if (res.locals.loggedin) {
+    accountHeader = '<a href="/account/manage" title="Click to update account">'
+    accountHeader += 'Welcome '
+    accountHeader += res.locals.accountData.account_firstname
+    accountHeader += '</a>'
+    accountHeader += '<a href="/account/logout" title="Click to logout">Logout</a>'
+  } else {
+    accountHeader = '<a href="/account/login" title="Click to login">Login</a>'
+  }
+  return accountHeader
+}
+
+Util.buildAccountManagementView = async function (data) {
+  let display
+  if (data) {
+    display = '<div class="account-management">'
+    display += '<h2>Welcome ' + data.account_firstname + '</h2>'
+    display += '<a href="/account/update-user" title="Click to update account">'
+    display += '<h3>Update Account</h3>'
+    display += '</a>'
+    if (data.account_type === "Employee" || data.account_type === "Admin") {
+      display += '<a href="/inv/management" title="Click to manage inventory">'
+      display += '<h3>Manage Inventory</h3>'
+      display += '</a>'
+    }
+    display += '</div>'
+  }
+  return display
 }
 
 /* ***************************************

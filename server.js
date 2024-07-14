@@ -45,9 +45,14 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true })) // for parsing application/x-www-form-urlencoded
 app.use(utilities.checkJWTToken)
 
-/* ***********************
+app.use((req, res, next) => {
+  res.locals.accountHeader = utilities.buildHeader(req, res);
+  next();
+});
+
+/* *************************
  * View Engine and Templates
- *************************/
+ ************************ */
 app.set("view engine", "ejs")
 app.use(expressLayouts)
 app.set("layout", "./layouts/layout")

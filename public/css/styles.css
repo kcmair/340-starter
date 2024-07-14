@@ -12,6 +12,13 @@ header {
   font-family: sans-serif;
 }
 
+h1 {
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  font-family: sans-serif;
+}
+
 body {
   margin: 0;
   padding: 0;
@@ -169,18 +176,22 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-direction: column;
   background-color: lightblue;
   font-family: Arial, sans-serif;
-  padding: 12px;
+  margin: 0 12px 0 12px;
 } form {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  padding: 20px 0 20px 0;
+  width: 90%;
 } label {
   margin-bottom: 5px;
 } input {
   margin-bottom: 15px;
   padding: 4px;
+  width: 80%;
 } button {
   background-color: mediumblue;
   color: white;
@@ -196,6 +207,14 @@ body {
 } select {
   margin-bottom: 12px;
   padding: 4px;
+} br {
+  margin: 8px;
+}
+
+.spacer {
+  height: 28px;
+  width: 100%;
+  background-color: white;
 }
 
 .manage {
@@ -208,6 +227,16 @@ body {
   padding: 12px;
 } a {
   margin: 8px;
+}
+
+.account-management {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-family: sans-serif;
+} a {
+  color: blue;
 }
 
 @media screen and (max-width: 850px) {

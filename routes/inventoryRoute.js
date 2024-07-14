@@ -22,7 +22,7 @@ router.post(
   "/add-classification",
   regValidate.classificationRules(),
   regValidate.checkClassData,
-  utilities.handleErrors(invController.addClassification)
+  utilities.handleErrors(invController.addClassView)
 )
 
 // Route to add inventory view
@@ -45,7 +45,7 @@ router.get("/edit/:inventoryId", (invController.editInventoryView))
 // Route to update inventory data
 router.post("/update/",
   regValidate.inventoryRules(),
-  regValidate.checkUpdateData,
+  regValidate.checkInventoryUpdateData,
   invController.updateInventory)
 
 // Route to delete inventory view
