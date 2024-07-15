@@ -2,7 +2,6 @@ const utilities = require("../utilities/")
 const accountModel = require("../models/account-model")
 const bcrypt = require("bcryptjs")
 const jwt = require("jsonwebtoken")
-const res = require("express/lib/response");
 require("dotenv").config()
 
 /* ****************************************
@@ -119,15 +118,6 @@ async function buildAccountManagementDetail(req, res) {
   })
 }
 
-async function buildAccountDetail(req, res) {
-  let nav = await utilities.getNav()
-  res.render("account/account", {
-    title: "My Account",
-    nav,
-    errors: null,
-  })
-}
-
 /* ****************************************
 *  Deliver account update view
 * *************************************** */
@@ -141,6 +131,7 @@ async function updateAccountView(req, res) {
     account_firstname: a.account_firstname,
     account_lastname: a.account_lastname,
     account_email: a.account_email,
+    account_type: a.account_type,
     errors: null,
   })
 }
@@ -162,6 +153,7 @@ async function updateAccount(req, res) {
   )
 
   if (regResult) {
+    res.locals.accountData = await accountModel.getAccountByEmail(account_email)
     req.flash(
       "notice",
       `Congratulations, ${account_firstname} you\'ve updated your account.`
@@ -173,21 +165,22 @@ async function updateAccount(req, res) {
     })
   } else {
     req.flash("notice", "Sorry, the account update failed.")
-    res.status(501).render("account/update-user", {
+    res.status(501).render("account/update", {
       title: "Update Your Account",
       nav,
       account_firstname,
       account_lastname,
       account_email,
       account_type,
-      account_id
+      account_id,
+      errors: null
     })
   }
 }
 
 async function updatePassword(req, res) {
   let nav = await utilities.getNav()
-  const { account_id, account_password } = req.body
+  const { account_firstname, account_lastname, account_email, account_type, account_id, account_password } = req.body
 
   // Hash the password before storing
   let hashedPassword
@@ -206,7 +199,11 @@ async function updatePassword(req, res) {
   const regResult = await accountModel.updatePassword(account_id, hashedPassword)
 
   if (regResult) {
-    res.clearCookie("jwt")
+    if (process.env.NODE_ENV === 'development') {
+      res.clearCookie("jwt", { httpOnly: true, signed: true})
+    } else {
+      res.clearCookie("jwt", { httpOnly: true, signed:true, secure: true })
+    }
     res.locals.accountData = null
     req.flash(
       "notice",
@@ -218,9 +215,13 @@ async function updatePassword(req, res) {
     })
   } else {
     req.flash("notice", "Sorry, the password update failed.")
-    res.status(501).render("account/register", {
-      title: "Registration",
+    res.status(501).render("account/update", {
+      title: "Update Your Account",
       nav,
+      account_firstname,
+      account_lastname,
+      account_email,
+      account_type,
       account_id
     })
   }

@@ -316,8 +316,7 @@ invCont.deleteInventory = async function (req, res) {
     inv_make,
     inv_model,
     inv_year,
-    inv_price,
-    classification_id
+    inv_price
   } = req.body
   const classificationList = await utilities.buildClassificationList()
 

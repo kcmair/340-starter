@@ -18,7 +18,7 @@ router.get("/register", utilities.handleErrors(accountController.buildRegistrati
 // Route to process the registration data
 router.post(
   "/register",
-  regValidate.registrationRules,
+  regValidate.registrationRules(),
   regValidate.checkRegData,
   utilities.handleErrors(accountController.registerAccount)
 )
@@ -31,14 +31,14 @@ router.get("/update-user", utilities.handleErrors(accountController.updateAccoun
 
 // Route to update the user info
 router.post("/update-user",
-  regValidate.updateAccountRules,
+  regValidate.updateAccountRules(),
   regValidate.checkAccountUpdateData,
   utilities.handleErrors(accountController.updateAccount)
 )
 
 // Route to update the password
 router.post("/update-password",
-  regValidate.updatePasswordRules,
+  regValidate.updatePasswordRules(),
   regValidate.checkAccountUpdateData,
   utilities.handleErrors(accountController.updatePassword))
 

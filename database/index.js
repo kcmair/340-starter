@@ -1,4 +1,5 @@
 const { Pool } = require("pg")
+const console = require("node:console");
 require("dotenv").config()
 /* ***************
  * Connection Pool

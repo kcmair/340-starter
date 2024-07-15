@@ -55,8 +55,7 @@ validate.registrationRules = () => {
 /*  **********************************
   *  Update Account Data Validation Rules
   * ********************************* */
-validate.updateAccountRules = (req) => {
-  const accountId = req.body.account_id
+validate.updateAccountRules = () => {
   return [
     // firstname is required and must be string
     body("account_firstname")
@@ -80,17 +79,10 @@ validate.updateAccountRules = (req) => {
       .isEmail()
       .normalizeEmail() // refer to validator.js docs
       .withMessage("A valid email is required.")
-      .custom(async (account_email) => {
-        const emailExists = await accountModel.checkExistingEmail(account_email)
-        const emailChanged = await accountModel.checkEmailChanged(account_email, accountId)
-        if (emailChanged && emailExists) {
-          throw new Error("Email exists. Please log in or use different email")
-        }
-      }),
   ]
 }
 
-validate.updatePasswordRules = async () => {
+validate.updatePasswordRules = () => {
   return [
     // password is required and must be strong password
     body("account_password")
@@ -132,9 +124,14 @@ validate.checkRegData = async (req, res, next) => {
  * Check data and return errors or continue to update account
  * ***************************** */
 validate.checkAccountUpdateData = async (req, res, next) => {
-  const { account_firstname, account_lastname, account_email, account_id } = req.body
-  let errors = validationResult(req)
-  if (!errors.isEmpty()) {
+  const { account_firstname, account_lastname, account_email, account_type, account_id } = req.body
+  let errors = validationResult(req).array()
+  const emailExists = await accountModel.checkExistingEmail(account_email)
+  const emailChanged = res.locals.accountData.account_email !== account_email
+  if (emailChanged && emailExists) {
+    errors.push({ msg: "Email exists. Please log in or use different email" })
+  }
+  if (errors.length > 0) {
     let nav = await utilities.getNav()
     res.render("account/update", {
       errors,
@@ -143,26 +140,13 @@ validate.checkAccountUpdateData = async (req, res, next) => {
       account_firstname,
       account_lastname,
       account_email,
+      account_type,
       account_id
     })
     return
   }
   next()
 }
-/*
-validate.checkPasswordRules = async (req, res, next) => {
-  const account_id = req.body
-  let errors = validationResult(req)
-  if (!errors.isEmpty()) {
-    let nav = await utilities.getNav()
-    res.render("account/update", {
-      errors,
-      title: "Update Your Account",
-      nav,
-      account_id
-    })
-  }
-}*/
 
 validate.classificationRules = () => {
   return [
