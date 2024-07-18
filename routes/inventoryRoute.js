@@ -53,4 +53,13 @@ router.get("/delete/:inventoryId", invController.deleteInventoryView)
 // Route to delete inventory data
 router.post("/delete/", invController.deleteInventory)
 
+// Route to build new inventory approval view
+router.get("/inv/approval", utilities.handleErrors(invController.buildInventoryApprovalView))
+
+// Route to approve new inventory
+router.post("/approve-inv", utilities.handleErrors(invController.approveInventory))
+
+// Route to approve new classification
+router.post("/approve-class", utilities.handleErrors(invController.approveClassification))
+
 module.exports = router

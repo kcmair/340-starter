@@ -1,5 +1,20 @@
 const invModel = require("../models/inventory-model")
 const utilities = require("../utilities/")
+const req = require("express/lib/request");
+const invModel = require("../models/inventory-model");
+const req = require("express/lib/request");
+const res = require("express/lib/response");
+const req = require("express/lib/request");
+const res = require("express/lib/response");
+const req = require("express/lib/request");
+const invModel = require("../models/inventory-model");
+const req = require("express/lib/request");
+const res = require("express/lib/response");
+const req = require("express/lib/request");
+const res = require("express/lib/response");
+const res = require("express/lib/response");
+const req = require("express/lib/request");
+const res = require("express/lib/response");
 const invCont = {}
 
 /* ***************************
@@ -344,6 +359,65 @@ invCont.deleteInventory = async function (req, res) {
       inv_year,
       inv_price,
     })
+  }
+}
+
+invCont.buildInventoryApprovalView = async function (req, res) {
+  const needsApproval = await utilities.buildInventoryApprovalView(req, res)
+  let nav = await utilities.getNav()
+  res.render("inventory/approval", {
+    title: "Management Approval",
+    nav,
+    data,
+    needsApproval,
+  })
+}
+
+invCont.approveInventory = async function (req, res) {
+  const inv_id = parseInt(req.params.inventoryId)
+  const regResult = await invModel.approveInventory(inv_id)
+  if (regResult) {
+    req.flash("notice", "Inventory approved successfully.")
+    res.redirect("/inv/approval")
+  } else {
+    req.flash("notice", "Something went wrong. Please try again.")
+    res.redirect("/inv/approval")
+  }
+}
+
+invCont.deleteUnapprovedInv = async function (req, res) {
+  const inv_id = parseInt(req.params.inventoryId)
+  const regResult = await invModel.deleteInventory(inv_id)
+  if (regResult) {
+    req.flash("notice", "Inventory successfully removed.")
+    res.redirect("/inv/approval")
+  } else {
+    req.flash("notice", "Something went wrong. Please try again.")
+    res.redirect("/inv/approval")
+  }
+}
+
+invCont.approveClassification = async function (req, res) {
+  const classification_id = parseInt(req.params.classificationId)
+  const regResult = await invModel.approveClassification(classification_id)
+  if (regResult) {
+    req.flash("notice", "Classification approved successfully.")
+    res.redirect("/inv/approval")
+  } else {
+    req.flash("notice", "Something went wrong. Please try again.")
+    res.redirect("/inv/approval")
+  }
+}
+
+invCont.deleteUnapprovedClass = async function (req, res) {
+  const classification_id = parseInt(req.params.classificationId)
+  const regResult = await invModel.deleteClassification(classification_id)
+  if (regResult) {
+    req.flash("notice", "Classification successfully removed.")
+    res.redirect("/inv/approval")
+  } else {
+    req.flash("notice", "Something went wrong. Please try again.")
+    res.redirect("/inv/approval")
   }
 }
 

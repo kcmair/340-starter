@@ -185,6 +185,43 @@ Util.buildAccountManagementView = async function (data) {
   return display
 }
 
+Util.buildInventoryApprovalView = async function (req, res) {
+  let data = await invModel.getNeedsApproval()
+  let needsApproval = '<div>'
+  if (res.locals.accountData.acount_type === "Admin") {
+    if (data.invData) {
+      needsApproval = '<ul id="inv-display" class="needsApproval">'
+      data.invData.forEach(vehicle => {
+        needsApproval += '<li>'
+        needsApproval += '<a href="../../inv/detail/'+ vehicle.inv_id
+          + '" title="View ' + vehicle.inv_make + ' '+ vehicle.inv_model
+          + 'details"><img src="' + vehicle.inv_thumbnail
+          +'" alt="Image of '+ vehicle.inv_make + ' ' + vehicle.inv_model
+          +' on CSE Motors" /></a>'
+        needsApproval += '<div class="namePrice">'
+        needsApproval += '<hr />'
+        needsApproval += '<h2>'
+        needsApproval += '<a href="../../inv/detail/' + vehicle.inv_id +'" title="View '
+          + vehicle.inv_make + ' ' + vehicle.inv_model + ' details">'
+          + vehicle.inv_make + ' ' + vehicle.inv_model + '</a>'
+        needsApproval += '</h2>'
+        needsApproval += '<span>$'
+          + new Intl.NumberFormat('en-US').format(vehicle.inv_price)
+          + '</span>'
+        needsApproval += '</div>'
+        needsApproval += '</li>'
+      })
+      needsApproval += '</ul>'
+    } else {
+      needsApproval += '<p class="notice">Sorry, no matching vehicles could be found.</p>'
+    }
+  } else {
+    needsApproval += '<h2>Please log in as an administrator to view this page.</h2>'
+  }
+  needsApproval += '</div>'
+  return needsApproval
+}
+
 /* ***************************************
  * Middleware For Handling Errors
  * Wrap other function in this for
