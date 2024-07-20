@@ -1,20 +1,5 @@
-const invModel = require("../models/inventory-model")
 const utilities = require("../utilities/")
-const req = require("express/lib/request");
 const invModel = require("../models/inventory-model");
-const req = require("express/lib/request");
-const res = require("express/lib/response");
-const req = require("express/lib/request");
-const res = require("express/lib/response");
-const req = require("express/lib/request");
-const invModel = require("../models/inventory-model");
-const req = require("express/lib/request");
-const res = require("express/lib/response");
-const req = require("express/lib/request");
-const res = require("express/lib/response");
-const res = require("express/lib/response");
-const req = require("express/lib/request");
-const res = require("express/lib/response");
 const invCont = {}
 
 /* ***************************
@@ -42,8 +27,8 @@ invCont.buildByClassificationId = async function (req, res) {
 }
 
 invCont.buildByInventoryId = async function (req, res) {
-  const inventory_id = req.params.inventoryId
-  const data = await invModel.getInventoryByInventoryId(inventory_id)
+  const inventoryId = req.params.inventoryId
+  const data = await invModel.getInventoryByInventoryId(inventoryId)
   const display = await utilities.displayInventory(data)
   let nav = await utilities.getNav()
   const inventoryName = data.inv_make + ' ' + data.inv_model
@@ -108,7 +93,7 @@ invCont.addClassification = async function (req, res) {
   if (regResult) {
     req.flash(
       "notice",
-      `Congratulations, you've added ${classification_name} to the list of classifications.`
+      `The ${classification_name} classification has been submitted to management for approval.`
     )
     const classificationList = await utilities.buildClassificationList()
     res.status(201).render("inventory/management", {
@@ -174,7 +159,7 @@ invCont.addInventory = async function (req, res) {
   if (regResult) {
     req.flash (
       "notice",
-      `A ${inv_color} ${inv_year} ${inv_make} ${inv_model} has been added to the inventory.`
+      `The ${inv_color} ${inv_year} ${inv_make} ${inv_model} has been submitted to management for approval.`
     )
     const classificationList = await utilities.buildClassificationList()
     res.status(201).render("inventory/management", {
@@ -217,9 +202,9 @@ invCont.getInventoryJSON = async (req, res, next) => {
  *  Build edit inventory view
  * ************************** */
 invCont.editInventoryView = async function (req, res) {
-  const inv_id = parseInt(req.params.inventoryId)
+  const inventoryId = parseInt(req.params.inventoryId)
   let nav = await utilities.getNav()
-  const itemData = await invModel.getInventoryByInventoryId(inv_id)
+  const itemData = await invModel.getInventoryByInventoryId(inventoryId)
   const classificationList = await utilities.buildClassificationList(itemData.classification_id)
   const itemName = `${itemData.inv_color} ${itemData.inv_year} ${itemData.inv_make} ${itemData.inv_model}`
   res.render("inventory/edit-inventory", {
@@ -309,9 +294,9 @@ invCont.updateInventory = async function (req, res) {
  *  Build delete confirmation view
  * ************************** */
 invCont.deleteInventoryView = async function (req, res) {
-  const inv_id = parseInt(req.params.inventoryId)
+  const inventoryId = parseInt(req.params.inventoryId)
   let nav = await utilities.getNav()
-  const itemData = await invModel.getInventoryByInventoryId(inv_id)
+  const itemData = await invModel.getInventoryByInventoryId(inventoryId)
   res.render("inventory/delete-confirm", {
     title: "Delete Confirmation",
     nav,
@@ -368,14 +353,14 @@ invCont.buildInventoryApprovalView = async function (req, res) {
   res.render("inventory/approval", {
     title: "Management Approval",
     nav,
-    data,
     needsApproval,
+    errors: null
   })
 }
 
 invCont.approveInventory = async function (req, res) {
-  const inv_id = parseInt(req.params.inventoryId)
-  const regResult = await invModel.approveInventory(inv_id)
+  const inventoryId = parseInt(req.params.inventoryId)
+  const regResult = await invModel.approveInventory(inventoryId)
   if (regResult) {
     req.flash("notice", "Inventory approved successfully.")
     res.redirect("/inv/approval")
@@ -386,8 +371,8 @@ invCont.approveInventory = async function (req, res) {
 }
 
 invCont.deleteUnapprovedInv = async function (req, res) {
-  const inv_id = parseInt(req.params.inventoryId)
-  const regResult = await invModel.deleteInventory(inv_id)
+  const inventoryId = parseInt(req.params.inventoryId)
+  const regResult = await invModel.deleteInventory(inventoryId)
   if (regResult) {
     req.flash("notice", "Inventory successfully removed.")
     res.redirect("/inv/approval")
@@ -398,8 +383,8 @@ invCont.deleteUnapprovedInv = async function (req, res) {
 }
 
 invCont.approveClassification = async function (req, res) {
-  const classification_id = parseInt(req.params.classificationId)
-  const regResult = await invModel.approveClassification(classification_id)
+  const classId = parseInt(req.params.classId)
+  const regResult = await invModel.approveClassification(classId)
   if (regResult) {
     req.flash("notice", "Classification approved successfully.")
     res.redirect("/inv/approval")

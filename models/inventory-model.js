@@ -1,7 +1,4 @@
-const pool = require("../database/")
-const pool = require("../database");
 const console = require("node:console");
-const pool = require("../database");
 const pool = require("../database");
 
 /* ***************************
