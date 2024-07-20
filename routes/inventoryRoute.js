@@ -50,6 +50,9 @@ router.post("/update/",
 // Route to delete inventory view
 router.get("/delete/:inventoryId", invController.deleteInventoryView)
 
+// Route to delete inventory
+router.post("/delete/:inventoryId", invController.deleteInventory)
+
 // Route to build new inventory approval view
 router.get("/approval", utilities.handleErrors(invController.buildInventoryApprovalView))
 

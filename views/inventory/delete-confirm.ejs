@@ -15,7 +15,7 @@
 <% } %>
 
 <div class="forms">
-    <form id="deleteForm" action="/inv/delete" method="post">
+    <form id="deleteForm" action="/inv/delete/<%= locals.inv_id%>" method="post">
         <label for="make">Make</label>
         <input readonly type="text" id="make" name="inv_make" required value="<%= locals.inv_make %>">
         <label for="model">Model</label>

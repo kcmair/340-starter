@@ -310,6 +310,7 @@ invCont.deleteInventoryView = async function (req, res) {
 }
 
 invCont.deleteInventory = async function (req, res) {
+  const classificationList = await utilities.buildClassificationList()
   let nav = await utilities.getNav()
   const  {
     inv_id,
@@ -318,7 +319,6 @@ invCont.deleteInventory = async function (req, res) {
     inv_year,
     inv_price
   } = req.body
-  const classificationList = await utilities.buildClassificationList()
 
   const regResult = await invModel.deleteInventory(inv_id)
 
@@ -395,8 +395,8 @@ invCont.approveClassification = async function (req, res) {
 }
 
 invCont.deleteUnapprovedClass = async function (req, res) {
-  const classification_id = parseInt(req.params.classificationId)
-  const regResult = await invModel.deleteClassification(classification_id)
+  const classId = parseInt(req.params.classId)
+  const regResult = await invModel.deleteClassification(classId)
   if (regResult) {
     req.flash("notice", "Classification successfully removed.")
     res.redirect("/inv/approval")
