@@ -1,4 +1,5 @@
-const pool = require("../database/")
+const console = require("node:console");
+const pool = require("../database");
 
 /* ***************************
  *  Get all classification data
@@ -111,6 +112,53 @@ async function deleteInventory(inv_id) {
     return await pool.query(sql, [inv_id])
   } catch (error) {
     console.error("Delete error: ", error)
+    return error
+  }
+}
+
+async function deleteClassification(classification_id) {
+  try{
+    const sql = 'DELETE FROM public.classification WHERE classification_id = $1'
+    return await pool.query(sql, [classification_id])
+  } catch (error) {
+    console.error("Delete Classification error: ", error)
+    return error
+  }
+}
+
+async function getNeedsApproval() {
+  try {
+    let sql = 'SELECT * FROM public.inventory WHERE inv_approval = false';
+    const invData = await pool.query(sql);
+
+    sql = 'SELECT * FROM public.classification WHERE classification_approval = false';
+    const classData = await pool.query(sql);
+
+    return {
+      invData: invData.rows,
+      classData: classData.rows
+    };
+  } catch (error){
+    console.error("getNeedsApproval error: ", error);
+    return error;
+  }
+}
+
+async function approveInventory(inv_id) {
+  try {
+    const sql = 'UPDATE public.inventory SET inv_approval = true WHERE inv_id = $1'
+    return await pool.query(sql, [inv_id])
+  } catch (error) {
+    console.error("Inventory Approval error: ", error)
+  }
+}
+
+async function approveClassification(classification_id) {
+  try {
+    const sql = 'UPDATE public.classification SET classification_approval = true WHERE classification_id = $1'
+    return await pool.query(sql, [classification_id])
+  } catch (error) {
+    console.error("Classification Approval error: ", error)
   }
 }
 
@@ -121,5 +169,9 @@ module.exports = {
   addClassification,
   addInventory,
   updateInventory,
-  deleteInventory
+  deleteInventory,
+  approveInventory,
+  approveClassification,
+  getNeedsApproval,
+  deleteClassification
 }

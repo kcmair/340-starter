@@ -50,7 +50,19 @@ router.post("/update/",
 // Route to delete inventory view
 router.get("/delete/:inventoryId", invController.deleteInventoryView)
 
-// Route to delete inventory data
-router.post("/delete/", invController.deleteInventory)
+// Route to build new inventory approval view
+router.get("/approval", utilities.handleErrors(invController.buildInventoryApprovalView))
+
+// Route to approve new inventory
+router.post("/approve-inv/:inventoryId", utilities.handleErrors(invController.approveInventory))
+
+// Route to delete unapproved inventory
+router.post("/delete-inv/:inventoryId", invController.deleteUnapprovedInv)
+
+// Route to approve new classification
+router.post("/approve-class/:classId", invController.approveClassification)
+
+// Route to delete unapproved classification
+router.post("/delete-class/:classId", invController.deleteUnapprovedClass)
 
 module.exports = router

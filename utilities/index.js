@@ -11,16 +11,18 @@ Util.getNav = async function () {
   let list = "<ul class='menu'>"
   list += '<li><a href="/" title="Home page">Home</a></li>'
   data.rows.forEach((row) => {
-    list += "<li>"
-    list +=
-      '<a href="/inv/type/' +
-      row.classification_id +
-      '" title="See our inventory of ' +
-      row.classification_name +
-      ' vehicles">' +
-      row.classification_name +
-      "</a>"
-    list += "</li>"
+    if (row.classification_approval) {
+      list += "<li>"
+      list +=
+        '<a href="/inv/type/' +
+        row.classification_id +
+        '" title="See our inventory of ' +
+        row.classification_name +
+        ' vehicles">' +
+        row.classification_name +
+        "</a>"
+      list += "</li>"
+    }
   })
   list += "</ul>"
   return list
@@ -34,24 +36,26 @@ Util.buildClassificationGrid = async function(data){
   if (data.length > 0) {
     grid = '<ul id="inv-display" class="grid">'
     data.forEach(vehicle => {
-      grid += '<li>'
-      grid += '<a href="../../inv/detail/'+ vehicle.inv_id
-        + '" title="View ' + vehicle.inv_make + ' '+ vehicle.inv_model
-        + 'details"><img src="' + vehicle.inv_thumbnail
-        +'" alt="Image of '+ vehicle.inv_make + ' ' + vehicle.inv_model
-        +' on CSE Motors" /></a>'
-      grid += '<div class="namePrice">'
-      grid += '<hr />'
-      grid += '<h2>'
-      grid += '<a href="../../inv/detail/' + vehicle.inv_id +'" title="View '
-        + vehicle.inv_make + ' ' + vehicle.inv_model + ' details">'
-        + vehicle.inv_make + ' ' + vehicle.inv_model + '</a>'
-      grid += '</h2>'
-      grid += '<span>$'
-        + new Intl.NumberFormat('en-US').format(vehicle.inv_price)
-        + '</span>'
-      grid += '</div>'
-      grid += '</li>'
+      if (vehicle.inv_approval) {
+        grid += '<li>'
+        grid += '<a href="../../inv/detail/'+ vehicle.inv_id
+          + '" title="View ' + vehicle.inv_make + ' '+ vehicle.inv_model
+          + 'details"><img src="' + vehicle.inv_thumbnail
+          +'" alt="Image of '+ vehicle.inv_make + ' ' + vehicle.inv_model
+          +' on CSE Motors" /></a>'
+        grid += '<div class="namePrice">'
+        grid += '<hr />'
+        grid += '<h2>'
+        grid += '<a href="../../inv/detail/' + vehicle.inv_id +'" title="View '
+          + vehicle.inv_make + ' ' + vehicle.inv_model + ' details">'
+          + vehicle.inv_make + ' ' + vehicle.inv_model + '</a>'
+        grid += '</h2>'
+        grid += '<span>$'
+          + new Intl.NumberFormat('en-US').format(vehicle.inv_price)
+          + '</span>'
+        grid += '</div>'
+        grid += '</li>'
+      }
     })
     grid += '</ul>'
   } else {
@@ -105,14 +109,16 @@ Util.buildClassificationList = async function (classification_id = null) {
     '<select name="classification_id" id="classificationList" required value="<%= locals.classification_id %>">'
   classificationList += "<option value=''>Choose a Classification</option>"
   data.rows.forEach((row) => {
-    classificationList += '<option value="' + row.classification_id + '"'
-    if (
-      classification_id != null &&
-      row.classification_id === classification_id
-    ) {
-      classificationList += " selected "
+    if (row.classification_approval) {
+      classificationList += '<option value="' + row.classification_id + '"'
+      if (
+        classification_id != null &&
+        row.classification_id === classification_id
+      ) {
+        classificationList += " selected "
+      }
+      classificationList += ">" + row.classification_name + "</option>"
     }
-    classificationList += ">" + row.classification_name + "</option>"
   })
   classificationList += "</select>"
   return classificationList
@@ -168,21 +174,97 @@ Util.buildHeader = (req, res) => {
 }
 
 Util.buildAccountManagementView = async function (data) {
-  let display
+  let manageAccount
   if (data) {
-    display = '<div class="account-management">'
-    display += '<h2>Welcome ' + data.account_firstname + '</h2>'
-    display += '<a href="/account/update-user" title="Click to update account">'
-    display += '<h3>Update Account</h3>'
-    display += '</a>'
+    manageAccount = '<div class="account-management">'
+    manageAccount += '<h2>Welcome ' + data.account_firstname + '</h2>'
+    manageAccount += '<a href="/account/update-user" title="Click to update account">'
+    manageAccount += '<h3>Update Account</h3>'
+    manageAccount += '</a>'
     if (data.account_type === "Employee" || data.account_type === "Admin") {
-      display += '<a href="/inv/management" title="Click to manage inventory">'
-      display += '<h3>Manage Inventory</h3>'
-      display += '</a>'
+      manageAccount += '<a href="/inv/management" title="Click to manage inventory">'
+      manageAccount += '<h3>Manage Inventory</h3>'
+      manageAccount += '</a>'
     }
-    display += '</div>'
+    if (data.account_type === "Admin") {
+      manageAccount += '<a href="/inv/approval" title="Click to approve new inventory/classifications">'
+      manageAccount += '<h3>Approve new inventory/classifications</h3>'
+      manageAccount += '</a>'
+    }
+    manageAccount += '</div>'
   }
-  return display
+  return manageAccount
+}
+
+Util.buildInventoryApprovalView = async function (req, res) {
+  let data = await invModel.getNeedsApproval()
+  let needsApproval = '<div>' +
+    '<p>The following inventory/classifications will not appear on the website until they have been approved by an administrator.</p>' +
+    '<hr/>'
+  if (res.locals.accountData && res.locals.accountData.account_type === "Admin") {
+    if (data.invData) {
+      needsApproval += '<h3><u>New Inventory</u></h3>'
+      needsApproval += '<ul id="inv-display" class="grid">'
+      data.invData.forEach(vehicle => {
+        needsApproval += '<li>'
+        needsApproval += '<img src="' + vehicle.inv_thumbnail +
+          '" alt="Image of '+ vehicle.inv_make + ' ' + vehicle.inv_model +
+          ' on CSE Motors" />'
+        needsApproval += '<div class="namePrice">'
+        needsApproval += '<hr/>'
+        needsApproval += '<h3>' + vehicle.inv_make + ' ' + vehicle.inv_model + '</h3>'
+        needsApproval += '<span>$' +
+          new Intl.NumberFormat('en-US').format(vehicle.inv_price) +
+          '</span>'
+        needsApproval += '</div>'
+        needsApproval += '<span class="approval">' +
+          '<form action="/inv/approve-inv/' +
+          vehicle.inv_id +
+          '" method="post">' +
+          '<button type="submit">Approve</button>' +
+          '</form>' +
+          '<form action="/inv/delete-inv/' +
+          vehicle.inv_id +
+          '" method="post">' +
+          '<button type="submit">Delete</button>' +
+          '</form>' +
+          '</span>'
+        needsApproval += '</li>'
+      })
+      needsApproval += '</ul>'
+    } else {
+      needsApproval += '<h3 class="notice">No New Inventory</h3>'
+    }
+    needsApproval += '<hr/>'
+    if(data.classData) {
+      needsApproval += '<h3><u>New Classifications</u></h3>'
+      needsApproval += '<div class="classification">'
+      needsApproval += '<ul>'
+      data.classData.forEach(classification => {
+        needsApproval += '<li>'
+        needsApproval += '<h3>'+classification.classification_name+'</h3>'
+        needsApproval += '<span class="approval">' +
+          '<form action="/inv/approve-class/' +
+          classification.classification_id +
+          '" method="post">' +
+          '<button type="submit">Approve</button>' +
+          '</form>' +
+          '<form action="/inv/delete-class/' +
+          classification.classification_id +
+          '" method="post">' +
+          '<button type="submit">Delete</button>' +
+          '</form>' +
+          '</span>'
+        needsApproval += '</li>'
+      })
+      needsApproval += '</ul>'
+      needsApproval += '</div>'
+    }
+  } else {
+    needsApproval += '<h2>Please log in as an administrator to view this page.</h2>'
+  }
+  needsApproval += '</div>'
+  return needsApproval
 }
 
 /* ***************************************

@@ -1,5 +1,5 @@
-const invModel = require("../models/inventory-model")
 const utilities = require("../utilities/")
+const invModel = require("../models/inventory-model");
 const invCont = {}
 
 /* ***************************
@@ -27,8 +27,8 @@ invCont.buildByClassificationId = async function (req, res) {
 }
 
 invCont.buildByInventoryId = async function (req, res) {
-  const inventory_id = req.params.inventoryId
-  const data = await invModel.getInventoryByInventoryId(inventory_id)
+  const inventoryId = req.params.inventoryId
+  const data = await invModel.getInventoryByInventoryId(inventoryId)
   const display = await utilities.displayInventory(data)
   let nav = await utilities.getNav()
   const inventoryName = data.inv_make + ' ' + data.inv_model
@@ -93,7 +93,7 @@ invCont.addClassification = async function (req, res) {
   if (regResult) {
     req.flash(
       "notice",
-      `Congratulations, you've added ${classification_name} to the list of classifications.`
+      `The ${classification_name} classification has been submitted to management for approval.`
     )
     const classificationList = await utilities.buildClassificationList()
     res.status(201).render("inventory/management", {
@@ -159,7 +159,7 @@ invCont.addInventory = async function (req, res) {
   if (regResult) {
     req.flash (
       "notice",
-      `A ${inv_color} ${inv_year} ${inv_make} ${inv_model} has been added to the inventory.`
+      `The ${inv_color} ${inv_year} ${inv_make} ${inv_model} has been submitted to management for approval.`
     )
     const classificationList = await utilities.buildClassificationList()
     res.status(201).render("inventory/management", {
@@ -202,9 +202,9 @@ invCont.getInventoryJSON = async (req, res, next) => {
  *  Build edit inventory view
  * ************************** */
 invCont.editInventoryView = async function (req, res) {
-  const inv_id = parseInt(req.params.inventoryId)
+  const inventoryId = parseInt(req.params.inventoryId)
   let nav = await utilities.getNav()
-  const itemData = await invModel.getInventoryByInventoryId(inv_id)
+  const itemData = await invModel.getInventoryByInventoryId(inventoryId)
   const classificationList = await utilities.buildClassificationList(itemData.classification_id)
   const itemName = `${itemData.inv_color} ${itemData.inv_year} ${itemData.inv_make} ${itemData.inv_model}`
   res.render("inventory/edit-inventory", {
@@ -294,9 +294,9 @@ invCont.updateInventory = async function (req, res) {
  *  Build delete confirmation view
  * ************************** */
 invCont.deleteInventoryView = async function (req, res) {
-  const inv_id = parseInt(req.params.inventoryId)
+  const inventoryId = parseInt(req.params.inventoryId)
   let nav = await utilities.getNav()
-  const itemData = await invModel.getInventoryByInventoryId(inv_id)
+  const itemData = await invModel.getInventoryByInventoryId(inventoryId)
   res.render("inventory/delete-confirm", {
     title: "Delete Confirmation",
     nav,
@@ -344,6 +344,65 @@ invCont.deleteInventory = async function (req, res) {
       inv_year,
       inv_price,
     })
+  }
+}
+
+invCont.buildInventoryApprovalView = async function (req, res) {
+  const needsApproval = await utilities.buildInventoryApprovalView(req, res)
+  let nav = await utilities.getNav()
+  res.render("inventory/approval", {
+    title: "Management Approval",
+    nav,
+    needsApproval,
+    errors: null
+  })
+}
+
+invCont.approveInventory = async function (req, res) {
+  const inventoryId = parseInt(req.params.inventoryId)
+  const regResult = await invModel.approveInventory(inventoryId)
+  if (regResult) {
+    req.flash("notice", "Inventory approved successfully.")
+    res.redirect("/inv/approval")
+  } else {
+    req.flash("notice", "Something went wrong. Please try again.")
+    res.redirect("/inv/approval")
+  }
+}
+
+invCont.deleteUnapprovedInv = async function (req, res) {
+  const inventoryId = parseInt(req.params.inventoryId)
+  const regResult = await invModel.deleteInventory(inventoryId)
+  if (regResult) {
+    req.flash("notice", "Inventory successfully removed.")
+    res.redirect("/inv/approval")
+  } else {
+    req.flash("notice", "Something went wrong. Please try again.")
+    res.redirect("/inv/approval")
+  }
+}
+
+invCont.approveClassification = async function (req, res) {
+  const classId = parseInt(req.params.classId)
+  const regResult = await invModel.approveClassification(classId)
+  if (regResult) {
+    req.flash("notice", "Classification approved successfully.")
+    res.redirect("/inv/approval")
+  } else {
+    req.flash("notice", "Something went wrong. Please try again.")
+    res.redirect("/inv/approval")
+  }
+}
+
+invCont.deleteUnapprovedClass = async function (req, res) {
+  const classification_id = parseInt(req.params.classificationId)
+  const regResult = await invModel.deleteClassification(classification_id)
+  if (regResult) {
+    req.flash("notice", "Classification successfully removed.")
+    res.redirect("/inv/approval")
+  } else {
+    req.flash("notice", "Something went wrong. Please try again.")
+    res.redirect("/inv/approval")
   }
 }
 
